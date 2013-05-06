@@ -8,9 +8,10 @@ Gem::Specification.new do |gem|
   gem.version       = Logfmt::VERSION
   gem.authors       = ["Timothée Peignier"]
   gem.email         = ["timothee.peignier@tryphon.org"]
-  gem.description   = %q{}
-  gem.summary       = %q{}
+  gem.description   = %q{Parse log lines in the logfmt style.}
+  gem.summary       = %q{Parse logfmt messages.}
   gem.homepage      = "https://github.com/cyberdelia/logfmt-ruby"
+  gem.license       = 'MIT'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
