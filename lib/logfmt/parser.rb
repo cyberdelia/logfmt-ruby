@@ -27,6 +27,9 @@ module Logfmt
     rule(:pair => { :key => simple(:key), :value => simple(:val) }) {
       Pair.new(key.to_sym, val.to_s)
     }
+    rule(:pair => { :key => simple(:key), :value => sequence(:val) }) {
+      Pair.new(key.to_sym, "")
+    }
     rule(:pair => { :key => simple(:key) }) {
       Pair.new(key.to_sym, true)
     }

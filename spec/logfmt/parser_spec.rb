@@ -66,4 +66,9 @@ describe Logfmt::Parser do
     data = Logfmt.parse('foo=bar a=14 baz="hello kitty" cool%story=bro f %^asdf')
     expect(data).to eq({:foo => "bar", :a => "14", :baz => "hello kitty", :"cool%story" => "bro", :f => true, :"%^asdf" => true})
   end
+
+  it 'parse pair with empty quote' do
+    data = Logfmt.parse('key=""')
+    expect(data).to eq({:key => ""})
+  end
 end
