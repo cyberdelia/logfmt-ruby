@@ -2,19 +2,23 @@ require "parslet"
 
 module Logfmt
   class Parser < Parslet::Parser
-    rule(:ident_byte) { match("[^ \t\r\n\f\"=]") }
-    rule(:string_byte) { match("[^\"\\\\]") }
-    rule(:garbage) { match("[ \t\r\n\f\"=]").repeat }
+    rule(:ident_byte) { match['^\s"='] }
+    rule(:string_byte) { match['^\\\\"'] }
+    rule(:garbage) { match['\s"='].repeat }
     rule(:ident) { ident_byte >> ident_byte.repeat }
     rule(:key) { ident }
     rule(:value) {
-      (ident.as(:value) | (str('"') >> (string_byte | str('\\') >> str('"')).repeat.as(:value) >> str('"')))
+      ident.as(:value) |
+      str('"') >> (string_byte | str('\"')).repeat.as(:value) >> str('"')
     }
     rule(:pair) {
       (key.as(:key) >> str('=') >> value) |
-      (key.as(:key) >> str('=')) | key.as(:key)
+      (key.as(:key) >> str('=')) |
+      key.as(:key)
     }
-    rule(:message) { (garbage >> pair.as(:pair)).repeat.as(:message) >> garbage }
+    rule(:message) {
+      (garbage >> pair.as(:pair)).repeat.as(:message) >> garbage
+    }
     root(:message)
   end
 
