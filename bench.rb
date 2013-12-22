@@ -4,6 +4,7 @@ $:.unshift File.expand_path('../lib', __FILE__)
 require 'logfmt/parser'
 require 'logfmt/hand_parser'
 require 'logfmt/regexp_parser'
+require 'logfmt/generator'
 
 require 'benchmark'
 require 'minitest/unit'
@@ -36,6 +37,12 @@ Benchmark.bm(20) do |x|
   x.report('regexp') do
     N.times do
       Logfmt::RegexpParser.parse(line)
+    end
+  end
+
+  x.report('gen') do
+    N.times do
+      Logfmt::Generator.generate(parsed)
     end
   end
 end
