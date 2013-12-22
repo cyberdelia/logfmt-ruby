@@ -21,4 +21,8 @@ describe Logfmt::Generator do
       expect(generator.generate(obj)).to eq(result)
     end
   end
+
+  it 'works with BasicObject' do
+    expect(generator.generate(BasicObject.new)).to eq('msg=...')
+  end
 end

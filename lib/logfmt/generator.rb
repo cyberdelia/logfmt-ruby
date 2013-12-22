@@ -3,6 +3,7 @@ module Logfmt
     QUOTE           = '"'
     GARBAGE_MATCH   = /[\s"=]/
 
+    # Must never raise an exception
     def generate(obj)
       obj = ensure_hash(obj)
       obj.map do |(k, v)|
@@ -13,7 +14,7 @@ module Logfmt
     protected
 
     def ensure_hash(obj)
-      if obj.respond_to?(:to_hash)
+      if (obj.respond_to?(:to_hash) rescue false)
         obj.to_hash
       else
         obj = {msg: obj}
@@ -25,7 +26,11 @@ module Logfmt
       when Symbol
         str = obj.to_s
       else
-        str = obj.inspect
+        begin
+          str = obj.inspect
+        rescue NameError
+          str = '...'
+        end
       end
       quoted = false
       s2 = str
