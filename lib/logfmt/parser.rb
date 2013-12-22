@@ -29,13 +29,13 @@ module Logfmt
       (ob.is_a?(Array) ? ob : [ ob ]).inject({}) { |h, p| h[p.key] = p.val; h }
     }
     rule(:pair => { :key => simple(:key), :value => simple(:val) }) {
-      Pair.new(key.to_sym, val.to_s)
+      Pair.new(key.to_s, val.to_s)
     }
     rule(:pair => { :key => simple(:key), :value => sequence(:val) }) {
-      Pair.new(key.to_sym, "")
+      Pair.new(key.to_s, "")
     }
     rule(:pair => { :key => simple(:key) }) {
-      Pair.new(key.to_sym, true)
+      Pair.new(key.to_s, true)
     }
   end
 
