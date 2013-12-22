@@ -3,8 +3,20 @@ module Logfmt
     GARBAGE       = /[\s"=]+/
     IDENT         = /[^\s"=]+/
     QUOTED_STRING = /(?:\\.|[^"])*/
-
-    RE = /
+    ESCAPE_CHARS  = {
+      '\a'    => "\a",
+      '\b'    => "\b",
+      '\e'    => "\e",
+      '\f'    => "\f",
+      '\n'    => "\n",
+      '\r'    => "\r",
+      '\s'    => "\s",
+      '\t'    => "\t",
+      '\v'    => "\v",
+      '\"'    => '"',
+      '\\\\'  => '\\',
+    }
+    RE            = /
       \G
       (?:
         (#{IDENT})
@@ -21,14 +33,17 @@ module Logfmt
       string.scan(RE) do |key, ident, str|
         next unless key
         if str
-          # FIXME - Unescape doesn't work with escaped chars like \t or \n
-          value = str.gsub(/\\(.)/, '\1')
+          value = unquote(str)
         else
           value = ident || true
         end
         obj[key] = value
       end
       obj
+    end
+
+    def self.unquote(string)
+      string.gsub(/\\./, ESCAPE_CHARS)
     end
   end
 end
