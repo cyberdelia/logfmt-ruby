@@ -1,14 +1,40 @@
 module Logfmt
   module Generator; extend self
     QUOTE           = '"'
+    CUT             = '...'
     GARBAGE_MATCH   = /[\s"=]/
+    SEPARATOR       = ' '
 
     # Must never raise an exception
-    def generate(obj)
+    #
+    # Options:
+    # * limit: maximum size of the string, defaults to nil
+    def generate(obj, opts={})
+      limit = opts[:limit] || opts['limit']
+
       obj = ensure_hash(obj)
-      obj.map do |(k, v)|
+      
+      # FIXME: avoid converting k,v if they are going to be discarded
+      #        by using the Enumerable#lazy introduced in ruby 2.0.0
+      res = obj.map do |(k, v)|
         "#{encode_string k}=#{encode_string v}"
-      end.join(' ')
+      end
+
+      if limit
+        limit = CUT.size if limit < CUT.size
+        size = 0
+        res.each_with_index do |str, i|
+          size += SEPARATOR.size if i > 0
+          size += str.size
+          if size > limit
+            res = res[0..i]
+            res[-1] = CUT
+            break
+          end
+        end
+      end
+
+      res.join(SEPARATOR)
     end
 
     protected
@@ -16,6 +42,8 @@ module Logfmt
     def ensure_hash(obj)
       if (obj.respond_to?(:to_hash) rescue false)
         obj.to_hash
+      elsif (obj.respond_to?(:to_h) rescue false)
+        obj.to_h
       else
         obj = {msg: obj}
       end
@@ -26,11 +54,7 @@ module Logfmt
       when Symbol
         str = obj.to_s
       else
-        begin
-          str = obj.inspect
-        rescue NameError
-          str = '...'
-        end
+        str = (obj.inspect rescue '...')
       end
       quoted = false
       s2 = str

@@ -45,5 +45,11 @@ Benchmark.bm(20) do |x|
       Logfmt::Generator.generate(parsed)
     end
   end
+
+  x.report('gen limit') do
+    N.times do
+      Logfmt::Generator.generate(parsed, limit: 20)
+    end
+  end
 end
 
