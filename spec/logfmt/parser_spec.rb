@@ -2,7 +2,7 @@
 require 'spec_helper'
 require 'logfmt/parser'
 
-describe Logfmt::Parser do
+describe Logfmt do
   it 'parse empty log line' do
     data = Logfmt.parse("")
     expect(data).to eq({})
@@ -55,12 +55,12 @@ describe Logfmt::Parser do
 
   it 'parse escaped quote value ' do
     data = Logfmt.parse('key="quoted \" value" r="esc\t"')
-    expect(data).to eq({"key" => 'quoted " value', "r" => "esc\t"})
+    expect(data).to eq({"key" => 'quoted \" value', "r" => "esc\\t"})
   end
 
   it 'parse mixed pairs' do
     data = Logfmt.parse('key1="quoted \" value" key2 key3=value3')
-    expect(data).to eq({"key1" => 'quoted " value', "key2" => true, "key3" => "value3"})
+    expect(data).to eq({"key1" => 'quoted \" value', "key2" => true, "key3" => "value3"})
   end
 
   it 'parse mixed characters pairs' do
