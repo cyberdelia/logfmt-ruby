@@ -1,49 +1,88 @@
-require "parslet"
-
 module Logfmt
-  class Parser < Parslet::Parser
-    rule(:ident_byte) { match['^\s"='] }
-    rule(:string_byte) { match['^\\\\"'] }
-    rule(:garbage) { match['\s"='].repeat }
-    rule(:ident) { ident_byte >> ident_byte.repeat }
-    rule(:key) { ident }
-    rule(:value) {
-      ident.as(:value) |
-      str('"') >> (string_byte | str('\"')).repeat.as(:value) >> str('"')
-    }
-    rule(:pair) {
-      (key.as(:key) >> str('=') >> value) |
-      (key.as(:key) >> str('=')) |
-      key.as(:key)
-    }
-    rule(:message) {
-      (garbage >> pair.as(:pair)).repeat.as(:message) >> garbage
-    }
-    root(:message)
-  end
+  GARBAGE = 0
+  KEY = 1
+  EQUAL = 2
+  IVALUE = 3
+  QVALUE = 4
 
-  class Transformer < Parslet::Transform
-    class Pair < Struct.new(:key, :val); end
-
-    rule(:message => subtree(:ob)) {
-      (ob.is_a?(Array) ? ob : [ ob ]).inject({}) { |h, p| h[p.key] = p.val; h }
-    }
-    rule(:pair => { :key => simple(:key), :value => simple(:val) }) {
-      Pair.new(key.to_s, val.to_s)
-    }
-    rule(:pair => { :key => simple(:key), :value => sequence(:val) }) {
-      Pair.new(key.to_s, "")
-    }
-    rule(:pair => { :key => simple(:key) }) {
-      Pair.new(key.to_s, true)
-    }
-  end
-
-  def self.parse(logs)
-    parser = Parser.new
-    transformer = Transformer.new
-
-    tree = parser.parse(logs)
-    transformer.apply(tree)
+  def self.parse(line)
+    output = {}
+    key, value = "", ""
+    escaped = false
+    state = GARBAGE
+    i = 0
+    line.each_char do |c|
+      i += 1
+      if state == GARBAGE
+        if c > ' ' && c != '"' && c != '='
+          key = c
+          state = KEY
+        end
+        next
+      end
+      if state == KEY
+        if c > ' ' && c != '"' && c != '='
+          state = KEY
+          key << c
+        elsif c == '='
+          output[key.strip()] = true
+          state = EQUAL
+        else
+          output[key.strip()] = true
+          state = GARBAGE
+        end
+        if i >= line.length
+          output[key.strip()] = true
+        end
+        next
+      end
+      if state == EQUAL
+        if c > ' ' && c != '"' && c != '='
+          value = c
+          state = IVALUE
+        elsif c == '"'
+          value = ""
+          escaped = false
+          state = QVALUE
+        else
+          state = GARBAGE
+        end
+        if i >= line.length
+          output[key.strip()] = true
+        end
+        next
+      end
+      if state == IVALUE
+        if not (c > ' ' && c != '"' && c != '=')
+          output[key.strip()] = value
+          state = GARBAGE
+        else
+          value << c
+        end
+        if i >= line.length
+          output[key.strip()] = value
+        end
+        next
+      end
+      if state == QVALUE
+        if c == '\\'
+          escaped = true
+          value << "\\"
+        elsif c == '"'
+          if escaped
+            escaped = false
+            value << c
+            next
+          end
+          output[key.strip()] = value
+          state = GARBAGE
+        else
+          escaped = false
+          value << c
+        end
+        next
+      end
+    end
+    output
   end
 end
