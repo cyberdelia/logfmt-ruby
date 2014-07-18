@@ -65,11 +65,39 @@ describe Logfmt do
 
   it 'parse mixed characters pairs' do
     data = Logfmt.parse('foo=bar a=14 baz="hello kitty" ƒ=2h3s cool%story=bro f %^asdf')
-    expect(data).to eq({"foo" => "bar", "a" => "14", "baz" => "hello kitty", "ƒ" => "2h3s", "cool%story" => "bro", "f" => true, "%^asdf" => true})
+    expect(data).to eq({"foo" => "bar", "a" => 14, "baz" => "hello kitty", "ƒ" => "2h3s", "cool%story" => "bro", "f" => true, "%^asdf" => true})
   end
 
   it 'parse pair with empty quote' do
     data = Logfmt.parse('key=""')
     expect(data).to eq({"key" => ""})
   end
+
+  # Currently, the value comes back as "true", which could mess up stats
+  # Really, only "true" should come back as "true"
+  # it 'parse 1 as integer type' do
+  #   data = Logfmt.parse('key=1')
+  #   expect(data["key"].class).to eq(Fixnum)
+  # end
+
+  it 'parse integer as integer type' do
+    data = Logfmt.parse('key=234')
+    expect(data["key"].class).to eq(Fixnum)
+  end
+
+  it 'parse float as float type' do
+    data = Logfmt.parse('key=3.342')
+    expect(data["key"].class).to eq(Float)
+  end
+
+  it 'parse quoted integer as string type' do
+    data = Logfmt.parse('key="234"')
+    expect(data["key"].class).to eq(String)
+  end
+
+  it 'parse quoted float as string type' do
+    data = Logfmt.parse('key="3.14"')
+    expect(data["key"].class).to eq(String)
+  end
+
 end
