@@ -80,13 +80,34 @@ describe Logfmt do
   #   expect(data["key"].class).to eq(Fixnum)
   # end
 
-  it 'parse integer as integer type' do
+  it 'parse positive integer as integer type' do
     data = Logfmt.parse('key=234')
+    expect(data["key"]).to eq(234)
     expect(data["key"].class).to eq(Fixnum)
   end
 
-  it 'parse float as float type' do
+  it 'parse negative integer as integer type' do
+    data = Logfmt.parse('key=-3428')
+    expect(data["key"]).to eq(-3428)
+    expect(data["key"].class).to eq(Fixnum)
+  end
+
+
+  it 'parse positive float as float type' do
     data = Logfmt.parse('key=3.342')
+    expect(data["key"]).to eq(3.342)
+    expect(data["key"].class).to eq(Float)
+  end
+
+  it 'parse negative float as float type' do
+    data = Logfmt.parse('key=-0.9934')
+    expect(data["key"]).to eq(-0.9934)
+    expect(data["key"].class).to eq(Float)
+  end
+
+  it 'parse exponential float as float type' do
+    data = Logfmt.parse('key=2.342342342342344e+18')
+    expect(data["key"]).to eq(2.342342342342344e+18)
     expect(data["key"].class).to eq(Float)
   end
 
@@ -97,6 +118,11 @@ describe Logfmt do
 
   it 'parse quoted float as string type' do
     data = Logfmt.parse('key="3.14"')
+    expect(data["key"].class).to eq(String)
+  end
+
+  it 'parse IP address as string type' do
+    data = Logfmt.parse('key=10.10.10.1')
     expect(data["key"].class).to eq(String)
   end
 
