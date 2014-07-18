@@ -1,3 +1,11 @@
+def numeric?(s)
+  return s.match(/\A[0-9\.]+\Z/)
+end
+
+def integer?(s)
+  return s.match(/\A[0-9]+\Z/)
+end
+
 module Logfmt
   GARBAGE = 0
   KEY = 1
@@ -54,12 +62,22 @@ module Logfmt
       end
       if state == IVALUE
         if not (c > ' ' && c != '"' && c != '=')
+          if integer?(value)
+            value = Integer(value)
+          elsif numeric?(value)
+            value = Float(value)
+          end
           output[key.strip()] = value
           state = GARBAGE
         else
           value << c
         end
         if i >= line.length
+          if integer?(value)
+            value = Integer(value)
+          elsif numeric?(value)
+            value = Float(value)
+          end
           output[key.strip()] = value
         end
         next
