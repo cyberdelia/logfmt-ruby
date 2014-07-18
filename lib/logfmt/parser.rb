@@ -1,10 +1,3 @@
-def numeric?(s)
-  return s.match(/\A[0-9\.]+\Z/)
-end
-
-def integer?(s)
-  return s.match(/\A[0-9]+\Z/)
-end
 
 module Logfmt
   GARBAGE = 0
@@ -12,6 +5,14 @@ module Logfmt
   EQUAL = 2
   IVALUE = 3
   QVALUE = 4
+
+  def self.numeric?(s)
+    return s.match(/\A[0-9\.]+\Z/)
+  end
+
+  def self.integer?(s)
+    return s.match(/\A[0-9]+\Z/)
+  end
 
   def self.parse(line)
     output = {}
