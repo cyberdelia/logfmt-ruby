@@ -7,11 +7,11 @@ module Logfmt
   QVALUE = 4
 
   def self.numeric?(s)
-    return s.match(/\A[0-9\.]+\Z/)
+    return s.match(/\A[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\Z/)
   end
 
   def self.integer?(s)
-    return s.match(/\A[0-9]+\Z/)
+    return s.match(/\A[-+]?[0-9]+\Z/)
   end
 
   def self.parse(line)
