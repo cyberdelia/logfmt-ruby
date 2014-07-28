@@ -61,7 +61,7 @@ module Logfmt
           elsif numeric?(value)
             value = Float(value)
           end
-          output[key.strip()] = value or true
+          output[key.strip()] = value || true
         end
         next
       end
