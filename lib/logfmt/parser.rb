@@ -1,4 +1,3 @@
-
 module Logfmt
   GARBAGE = 0
   KEY = 1
@@ -57,7 +56,12 @@ module Logfmt
           state = GARBAGE
         end
         if i >= line.length
-          output[key.strip()] = true
+          if integer?(value)
+            value = Integer(value)
+          elsif numeric?(value)
+            value = Float(value)
+          end
+          output[key.strip()] = value or true
         end
         next
       end

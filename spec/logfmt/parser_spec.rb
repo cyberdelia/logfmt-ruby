@@ -126,4 +126,9 @@ describe Logfmt do
     expect(data["key"].class).to eq(String)
   end
 
+  it 'parse last as integer type' do
+    data = Logfmt.parse('key1=4 key2=9')
+    expect(data["key1"]).to eq(4)
+    expect(data["key2"]).to eq(9)
+  end
 end
