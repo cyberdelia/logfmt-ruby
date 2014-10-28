@@ -6,16 +6,16 @@ module Logfmt
   QVALUE = 4
 
   def self.numeric?(s)
-    return s.match(/\A[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\Z/)
+    s.match(/\A[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\Z/)
   end
 
   def self.integer?(s)
-    return s.match(/\A[-+]?[0-9]+\Z/)
+    s.match(/\A[-+]?[0-9]+\Z/)
   end
 
   def self.parse(line)
     output = {}
-    key, value = "", ""
+    key, value = '', ''
     escaped = false
     state = GARBAGE
     i = 0
@@ -33,15 +33,13 @@ module Logfmt
           state = KEY
           key << c
         elsif c == '='
-          output[key.strip()] = true
+          output[key.strip] = true
           state = EQUAL
         else
-          output[key.strip()] = true
+          output[key.strip] = true
           state = GARBAGE
         end
-        if i >= line.length
-          output[key.strip()] = true
-        end
+        output[key.strip] = true if i >= line.length
         next
       end
       if state == EQUAL
@@ -49,7 +47,7 @@ module Logfmt
           value = c
           state = IVALUE
         elsif c == '"'
-          value = ""
+          value = ''
           escaped = false
           state = QVALUE
         else
@@ -61,18 +59,18 @@ module Logfmt
           elsif numeric?(value)
             value = Float(value)
           end
-          output[key.strip()] = value || true
+          output[key.strip] = value || true
         end
         next
       end
       if state == IVALUE
-        if not (c > ' ' && c != '"' && c != '=')
+        if !(c > ' ' && c != '"' && c != '=')
           if integer?(value)
             value = Integer(value)
           elsif numeric?(value)
             value = Float(value)
           end
-          output[key.strip()] = value
+          output[key.strip] = value
           state = GARBAGE
         else
           value << c
@@ -83,21 +81,21 @@ module Logfmt
           elsif numeric?(value)
             value = Float(value)
           end
-          output[key.strip()] = value
+          output[key.strip] = value
         end
         next
       end
       if state == QVALUE
         if c == '\\'
           escaped = true
-          value << "\\"
+          value << '\\'
         elsif c == '"'
           if escaped
             escaped = false
             value << c
             next
           end
-          output[key.strip()] = value
+          output[key.strip] = value
           state = GARBAGE
         else
           escaped = false

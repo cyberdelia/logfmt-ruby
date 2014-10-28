@@ -1,2 +1,2 @@
-require "logfmt/version"
-require "logfmt/parser"
+require 'logfmt/version'
+require 'logfmt/parser'
