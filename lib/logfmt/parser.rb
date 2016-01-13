@@ -15,7 +15,7 @@ module Logfmt
   
   def self.convertType(val)
     if integer?(val)
-      val = Integer(val)
+      val = Integer(val, 10)
     elsif numeric?(val)
       val = Float(val)
     end
