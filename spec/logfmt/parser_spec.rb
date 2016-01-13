@@ -86,6 +86,12 @@ describe Logfmt do
     expect(data['key']).to eq(234)
     expect(data['key'].class).to eq(Fixnum)
   end
+  
+  it 'parse integer prefixed with zero correctly' do
+    data = Logfmt.parse('key=0789')
+    expect(data).to eq('key' => 789)
+    expect(data['key'].class).to eq(Fixnum)
+  end
 
   it 'parse negative integer as integer type' do
     data = Logfmt.parse('key=-3428')

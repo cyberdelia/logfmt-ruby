@@ -12,6 +12,15 @@ module Logfmt
   def self.integer?(s)
     s.match(/\A[-+]?[0-9]+\Z/)
   end
+  
+  def self.convertType(val)
+    if integer?(val)
+      val = Integer(val, 10)
+    elsif numeric?(val)
+      val = Float(val)
+    end
+    val
+  end
 
   def self.parse(line)
     output = {}
@@ -54,33 +63,21 @@ module Logfmt
           state = GARBAGE
         end
         if i >= line.length
-          if integer?(value)
-            value = Integer(value)
-          elsif numeric?(value)
-            value = Float(value)
-          end
+          value = convertType(value)
           output[key.strip] = value || true
         end
         next
       end
       if state == IVALUE
         if !(c > ' ' && c != '"' && c != '=')
-          if integer?(value)
-            value = Integer(value)
-          elsif numeric?(value)
-            value = Float(value)
-          end
+          value = convertType(value)
           output[key.strip] = value
           state = GARBAGE
         else
           value << c
         end
         if i >= line.length
-          if integer?(value)
-            value = Integer(value)
-          elsif numeric?(value)
-            value = Float(value)
-          end
+          value = convertType(value)
           output[key.strip] = value
         end
         next
