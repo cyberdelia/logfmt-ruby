@@ -6,11 +6,11 @@ module Logfmt
   QVALUE = 4
 
   def self.numeric?(s)
-    s.match(/\A[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\Z/)
+    s.is_a?(Numeric) || s.to_s.match(/\A[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\Z/)
   end
 
   def self.integer?(s)
-    s.match(/\A[-+]?[0-9]+\Z/)
+    s.is_a?(Integer) || s.to_s.match(/\A[-+]?[0-9]+\Z/)
   end
 
   def self.parse(line)
