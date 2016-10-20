@@ -55,9 +55,9 @@ module Logfmt
         end
         if i >= line.length
           if integer?(value)
-            value = Integer(value)
+            value = value.to_i
           elsif numeric?(value)
-            value = Float(value)
+            value = value.to_f
           end
           output[key.strip] = value || true
         end
@@ -66,9 +66,9 @@ module Logfmt
       if state == IVALUE
         if !(c > ' ' && c != '"' && c != '=')
           if integer?(value)
-            value = Integer(value)
+            value = value.to_i
           elsif numeric?(value)
-            value = Float(value)
+            value = value.to_f
           end
           output[key.strip] = value
           state = GARBAGE
@@ -77,9 +77,9 @@ module Logfmt
         end
         if i >= line.length
           if integer?(value)
-            value = Integer(value)
+            value = value.to_i
           elsif numeric?(value)
-            value = Float(value)
+            value = value.to_f
           end
           output[key.strip] = value
         end
