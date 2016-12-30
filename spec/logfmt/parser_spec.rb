@@ -132,8 +132,19 @@ describe Logfmt do
     expect(data['key2']).to eq(9)
   end
 
+
   it 'parse string containing quotes' do
     data = Logfmt.parse('key1="{\"msg\": \"hello\tworld\"}"')
     expect(data['key1']).to eq('{"msg": "hello\tworld"}')
+  end
+
+  it 'parse value containing equal sign' do
+    query = 'position=44.80450799126121%2C33.58320759981871&uid=1'
+    data = Logfmt.parse("method=GET query=#{query} status=200")
+    expect(data).to eq(
+      'method' => 'GET',
+      'query' => query,
+      'status' => 200
+    )
   end
 end

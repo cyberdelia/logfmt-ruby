@@ -64,7 +64,7 @@ module Logfmt
         next
       end
       if state == IVALUE
-        if !(c > ' ' && c != '"' && c != '=')
+        if !(c > ' ' && c != '"')
           if integer?(value)
             value = Integer(value)
           elsif numeric?(value)
