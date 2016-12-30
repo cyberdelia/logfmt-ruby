@@ -55,12 +55,12 @@ describe Logfmt do
 
   it 'parse escaped quote value ' do
     data = Logfmt.parse('key="quoted \" value" r="esc\t"')
-    expect(data).to eq('key' => 'quoted \" value', 'r' => 'esc\\t')
+    expect(data).to eq('key' => 'quoted " value', 'r' => 'esc\t')
   end
 
   it 'parse mixed pairs' do
     data = Logfmt.parse('key1="quoted \" value" key2 key3=value3')
-    expect(data).to eq('key1' => 'quoted \" value', 'key2' => true, 'key3' => 'value3')
+    expect(data).to eq('key1' => 'quoted " value', 'key2' => true, 'key3' => 'value3')
   end
 
   it 'parse mixed characters pairs' do
@@ -130,6 +130,12 @@ describe Logfmt do
     data = Logfmt.parse('key1=4 key2=9')
     expect(data['key1']).to eq(4)
     expect(data['key2']).to eq(9)
+  end
+
+
+  it 'parse string containing quotes' do
+    data = Logfmt.parse('key1="{\"msg\": \"hello\tworld\"}"')
+    expect(data['key1']).to eq('{"msg": "hello\tworld"}')
   end
 
   it 'parse value containing equal sign' do

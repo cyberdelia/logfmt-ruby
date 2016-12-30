@@ -92,7 +92,7 @@ module Logfmt
         elsif c == '"'
           if escaped
             escaped = false
-            value << c
+            value.chop! << c
             next
           end
           output[key.strip] = value
