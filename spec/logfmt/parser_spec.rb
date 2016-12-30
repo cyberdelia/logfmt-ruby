@@ -132,7 +132,7 @@ describe Logfmt do
     expect(data['key2']).to eq(9)
   end
 
-  it 'parse string contaning quotes' do
+  it 'parse string containing quotes' do
     data = Logfmt.parse('key1="{\"msg\": \"hello\tworld\"}"')
     expect(data['key1']).to eq('{"msg": "hello\tworld"}')
   end
