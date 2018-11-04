@@ -57,7 +57,8 @@ module Logfmt
           if integer?(value)
             value = value.to_i
           elsif numeric?(value)
-            value = value.to_f
+            fvalue = value.to_f
+            value = fvalue if fvalue.finite?
           end
           output[key.strip] = value || true
         end
@@ -68,7 +69,8 @@ module Logfmt
           if integer?(value)
             value = value.to_i
           elsif numeric?(value)
-            value = value.to_f
+            fvalue = value.to_f
+            value = fvalue if fvalue.finite?
           end
           output[key.strip] = value
           state = GARBAGE
@@ -79,7 +81,8 @@ module Logfmt
           if integer?(value)
             value = value.to_i
           elsif numeric?(value)
-            value = value.to_f
+            fvalue = value.to_f
+            value = fvalue if fvalue.finite?
           end
           output[key.strip] = value
         end
