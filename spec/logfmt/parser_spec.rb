@@ -111,6 +111,11 @@ describe Logfmt do
     expect(data['key'].class).to eq(Float)
   end
 
+  it 'parse long digit string with embedded e as string' do
+    data = Logfmt.parse('key=2342342342342344e1818')
+    expect(data['key'].class).to eq(String)
+  end
+
   it 'parse quoted integer as string type' do
     data = Logfmt.parse('key="234"')
     expect(data['key'].class).to eq(String)
