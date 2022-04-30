@@ -1,148 +1,148 @@
-require "logfmt/parser"
+RSpec.describe Logfmt::Parser do
+  subject(:parser) { described_class }
 
-RSpec.describe Logfmt do
-  it "parse empty log line" do
-    data = Logfmt.parse("")
+  it "parses empty log line" do
+    data = parser.parse("")
     expect(data).to eq({})
   end
 
-  it "parse whitespace only log line" do
-    data = Logfmt.parse("\t")
+  it "parses whitespace only log line" do
+    data = parser.parse("\t")
     expect(data).to eq({})
   end
 
-  it "parse key without value" do
-    data = Logfmt.parse("key")
+  it "parses key without value" do
+    data = parser.parse("key")
     expect(data).to eq("key" => true)
   end
 
-  it "parse key without value and whitespace" do
-    data = Logfmt.parse("  key  ")
+  it "parses key without value and whitespace" do
+    data = parser.parse("  key  ")
     expect(data).to eq("key" => true)
   end
 
-  it "parse multiple single keys" do
-    data = Logfmt.parse("key1 key2")
+  it "parses multiple single keys" do
+    data = parser.parse("key1 key2")
     expect(data).to eq("key1" => true, "key2" => true)
   end
 
-  it "parse unquoted value" do
-    data = Logfmt.parse("key=value")
+  it "parses unquoted value" do
+    data = parser.parse("key=value")
     expect(data).to eq("key" => "value")
   end
 
-  it "parse pairs" do
-    data = Logfmt.parse("key1=value1 key2=value2")
+  it "parses pairs" do
+    data = parser.parse("key1=value1 key2=value2")
     expect(data).to eq("key1" => "value1", "key2" => "value2")
   end
 
-  it "parse mixed single/non-single pairs" do
-    data = Logfmt.parse("key1=value1 key2")
+  it "parses mixed single/non-single pairs" do
+    data = parser.parse("key1=value1 key2")
     expect(data).to eq("key1" => "value1", "key2" => true)
   end
 
-  it "parse mixed pairs whatever the order" do
-    data = Logfmt.parse("key1 key2=value2")
+  it "parses mixed pairs whatever the order" do
+    data = parser.parse("key1 key2=value2")
     expect(data).to eq("key1" => true, "key2" => "value2")
   end
 
-  it "parse quoted value" do
-    data = Logfmt.parse('key="quoted value"')
+  it "parses quoted value" do
+    data = parser.parse('key="quoted value"')
     expect(data).to eq("key" => "quoted value")
   end
 
-  it "parse escaped quote value " do
-    data = Logfmt.parse('key="quoted \" value" r="esc\t"')
+  it "parses escaped quote value " do
+    data = parser.parse('key="quoted \" value" r="esc\t"')
     expect(data).to eq("key" => 'quoted " value', "r" => 'esc\t')
   end
 
-  it "parse mixed pairs" do
-    data = Logfmt.parse('key1="quoted \" value" key2 key3=value3')
+  it "parses mixed pairs" do
+    data = parser.parse('key1="quoted \" value" key2 key3=value3')
     expect(data).to eq("key1" => 'quoted " value', "key2" => true, "key3" => "value3")
   end
 
-  it "parse mixed characters pairs" do
-    data = Logfmt.parse('foo=bar a=14 baz="hello kitty" ƒ=2h3s cool%story=bro f %^asdf')
+  it "parses mixed characters pairs" do
+    data = parser.parse('foo=bar a=14 baz="hello kitty" ƒ=2h3s cool%story=bro f %^asdf')
     expect(data).to eq("foo" => "bar", "a" => 14, "baz" => "hello kitty",
       "ƒ" => "2h3s", "cool%story" => "bro", "f" => true, "%^asdf" => true)
   end
 
-  it "parse pair with empty quote" do
-    data = Logfmt.parse('key=""')
+  it "parses pair with empty quote" do
+    data = parser.parse('key=""')
     expect(data).to eq("key" => "")
   end
 
   # Currently, the value comes back as "true", which could mess up stats
   # Really, only "true" should come back as "true"
   # it 'parse 1 as integer type' do
-  #   data = Logfmt.parse('key=1')
+  #   data = parser.parse('key=1')
   #   expect(data['key'].class).to eq(Fixnum)
   # end
 
-  it "parse positive integer as integer type" do
-    data = Logfmt.parse("key=234")
+  it "parses positive integer as integer type" do
+    data = parser.parse("key=234")
     expect(data["key"]).to eq(234)
     expect(data["key"].class).to eq(Integer)
   end
 
-  it "parse negative integer as integer type" do
-    data = Logfmt.parse("key=-3428")
+  it "parses negative integer as integer type" do
+    data = parser.parse("key=-3428")
     expect(data["key"]).to eq(-3428)
     expect(data["key"].class).to eq(Integer)
   end
 
-  it "parse positive float as float type" do
-    data = Logfmt.parse("key=3.342")
+  it "parses positive float as float type" do
+    data = parser.parse("key=3.342")
     expect(data["key"]).to eq(3.342)
     expect(data["key"].class).to eq(Float)
   end
 
-  it "parse negative float as float type" do
-    data = Logfmt.parse("key=-0.9934")
+  it "parses negative float as float type" do
+    data = parser.parse("key=-0.9934")
     expect(data["key"]).to eq(-0.9934)
     expect(data["key"].class).to eq(Float)
   end
 
-  it "parse exponential float as float type" do
-    data = Logfmt.parse("key=2.342342342342344e+18")
+  it "parses exponential float as float type" do
+    data = parser.parse("key=2.342342342342344e+18")
     expect(data["key"]).to eq(2.342342342342344e+18)
     expect(data["key"].class).to eq(Float)
   end
 
-  it "parse long digit string with embedded e as string" do
-    data = Logfmt.parse("key=2342342342342344e1818")
+  it "parses long digit string with embedded e as string" do
+    data = parser.parse("key=2342342342342344e1818")
     expect(data["key"].class).to eq(String)
   end
 
-  it "parse quoted integer as string type" do
-    data = Logfmt.parse('key="234"')
+  it "parses quoted integer as string type" do
+    data = parser.parse('key="234"')
     expect(data["key"].class).to eq(String)
   end
 
-  it "parse quoted float as string type" do
-    data = Logfmt.parse('key="3.14"')
+  it "parses quoted float as string type" do
+    data = parser.parse('key="3.14"')
     expect(data["key"].class).to eq(String)
   end
 
-  it "parse IP address as string type" do
-    data = Logfmt.parse("key=10.10.10.1")
+  it "parses IP address as string type" do
+    data = parser.parse("key=10.10.10.1")
     expect(data["key"].class).to eq(String)
   end
 
-  it "parse last as integer type" do
-    data = Logfmt.parse("key1=4 key2=9")
+  it "parses last as integer type" do
+    data = parser.parse("key1=4 key2=9")
     expect(data["key1"]).to eq(4)
     expect(data["key2"]).to eq(9)
   end
 
-  it "parse string containing quotes" do
-    data = Logfmt.parse('key1="{\"msg\": \"hello\tworld\"}"')
+  it "parses string containing quotes" do
+    data = parser.parse('key1="{\"msg\": \"hello\tworld\"}"')
     expect(data["key1"]).to eq('{"msg": "hello\tworld"}')
   end
 
-  it "parse value containing equal sign" do
+  it "parses value containing equal sign" do
     query = "position=44.80450799126121%2C33.58320759981871&uid=1"
-    data = Logfmt.parse("method=GET query=#{query} status=200")
+    data = parser.parse("method=GET query=#{query} status=200")
     expect(data).to eq(
       "method" => "GET",
       "query" => query,
@@ -151,7 +151,7 @@ RSpec.describe Logfmt do
   end
 
   it "parses integers correctly" do
-    data = Logfmt.parse("key=111 ")
+    data = parser.parse("key=111 ")
     expect(data["key"]).to eq(111)
   end
 end
