@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Logfmt
   GARBAGE = 0
   KEY = 1
@@ -15,24 +17,24 @@ module Logfmt
 
   def self.parse(line)
     output = {}
-    key, value = '', ''
+    key, value = +"", +""
     escaped = false
     state = GARBAGE
     i = 0
     line.each_char do |c|
       i += 1
       if state == GARBAGE
-        if c > ' ' && c != '"' && c != '='
+        if c > " " && c != '"' && c != "="
           key = c
           state = KEY
         end
         next
       end
       if state == KEY
-        if c > ' ' && c != '"' && c != '='
+        if c > " " && c != '"' && c != "="
           state = KEY
           key << c
-        elsif c == '='
+        elsif c == "="
           output[key.strip] = true
           state = EQUAL
         else
@@ -43,11 +45,11 @@ module Logfmt
         next
       end
       if state == EQUAL
-        if c > ' ' && c != '"' && c != '='
+        if c > " " && c != '"' && c != "="
           value = c
           state = IVALUE
         elsif c == '"'
-          value = ''
+          value = +""
           escaped = false
           state = QVALUE
         else
@@ -65,7 +67,7 @@ module Logfmt
         next
       end
       if state == IVALUE
-        if !(c > ' ' && c != '"')
+        if !(c > " " && c != '"')
           if integer?(value)
             value = value.to_i
           elsif numeric?(value)
@@ -89,9 +91,9 @@ module Logfmt
         next
       end
       if state == QVALUE
-        if c == '\\'
+        if c == "\\"
           escaped = true
-          value << '\\'
+          value << "\\"
         elsif c == '"'
           if escaped
             escaped = false
