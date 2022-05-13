@@ -3,6 +3,7 @@
 require "logfmt/version"
 
 module Logfmt
+  autoload(:Logger, "logfmt/logger")
   autoload(:Parser, "logfmt/parser")
 
   def self.parse(line)
