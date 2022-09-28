@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "lib/logfmt/version"
+require "English"
 
 Gem::Specification.new do |spec|
   spec.name = "logfmt-tagged_logger"
@@ -22,7 +23,9 @@ Gem::Specification.new do |spec|
   }
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files lib | grep tagged_logger`.split("\x0") + ["README.md", "CHANGELOG.md"]
+    `git ls-files lib | grep tagged_logger`.split(
+      $OUTPUT_RECORD_SEPARATOR
+    ) + ["README.md", "CHANGELOG.md"]
   end
   spec.require_paths = ["lib"]
 
