@@ -1,3 +1,4 @@
 source "https://rubygems.org"
 
-gemspec
+gemspec name: "logfmt"
+gemspec name: "logfmt-tagged_logger"

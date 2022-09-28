@@ -28,7 +28,7 @@ This project adheres to [Semantic Versioning][semver].
 
 ## Usage
 
-`Logfmt` is composed to two sides of these coin: writing structured log lines in the `logfmt` style, and parsing `logfmt`-style log lines.
+`Logfmt` is composed to two parts: writing structured log lines in the `logfmt` style, and parsing `logfmt`-style log lines.
 
 While writing and parsing `logfmt` are related, we've found that it's common to only need to do one or there other in a single application.
 To support that usage, `Logfmt` leverages Ruby's `autoload` to lazily load the `Logfmt::Parser` or `Logfmt::Logger` (and associated code) into memory.
@@ -79,6 +79,36 @@ logger.debug("MADE IT HERE!")
   #=> time=2022-04-20T23:33:44.912595Z severity=DEBUG msg="MADE IT HERE!"
 ```
 
+#### Tagged log lines
+
+The `logfmt-tagged_logger` gem adds support for Rails-style [tagged logging][tagged-logger].
+This gem adds a `Logfmt::TaggedLogger` which is built on `ActiveSupport::TaggedLogger`, but emits the tags in logfmt-style, as key/value pairs.
+For example
+
+```ruby
+logger = Logfmt::TaggedLogger.new($stdout)
+
+logger.tagged(source: "api") do
+  logger.info(foo: "bar")
+end
+
+#=> time=2022-04-20T23:33:44.912595Z severity=info source=api foo=bar"
+```
+
+You can also pass "bare" tags and they'll be collected and emitted under the `tags` key.
+
+```ruby
+logger = Logfmt::TaggedLogger.new($stdout)
+
+logger.tagged("API", "1.2.3.4") do
+  logger.info(foo: "bar")
+end
+
+#=> time=2022-04-20T23:33:44.912595Z severity=info tags="[API] [1.2.3.4]" foo=bar"
+```
+
+It's likely more helpful and useful to use meaningful key/values for your tags, rather than bare tags.
+
 #### Expected key/value transformations
 
 When writing a log line with the `Logfmt::Logger::KeyValueFormatter` the keys and/or values will be transformed thusly:
@@ -121,3 +151,4 @@ Additionally, symbol keys will be parsed back into string keys.
 
 [logfmt-blog]: https://brandur.org/logfmt "Structured log lines with key/value pairs"
 [semver]: https://semver.org/spec/v2.0.0.html "Semantic Versioning 2.0.0"
+[tagged-logger]: https://guides.rubyonrails.org/debugging_rails_applications.html#tagged-logging "Tagged Logging"

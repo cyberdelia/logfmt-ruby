@@ -8,11 +8,11 @@ Gem::Specification.new do |spec|
   spec.authors = ["Timothée Peignier"]
   spec.email = ["timothee.peignier@tryphon.org"]
 
-  spec.summary = "Parse logfmt messages."
-  spec.description = "Parse log lines in the logfmt style."
+  spec.summary = "Write and parse logfmt messages."
+  spec.description = "Write and parse log lines in the logfmt style."
   spec.homepage = "https://github.com/cyberdelia/logfmt-ruby"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.4.0"
+  spec.required_ruby_version = ">= 2.5.0"
 
   spec.metadata = {
     "bug_tracker_uri" => "#{spec.homepage}/issues",
