@@ -20,10 +20,18 @@ jobs:
     - name: Publish to RubyGems
       run: |
         mkdir -p $HOME/.gem
-        touch $HOME/.gem/credentials
+
+        cat << EOF > $HOME/.gem/credentials
+        ---
+        :github: Bearer ${GITHUB_TOKEN}
+        :rubygems_api_key: ${RUBYGEMS_API_KEY}
+        EOF
+
         chmod 0600 $HOME/.gem/credentials
-        printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+        set -x
+
         bin/rake logfmt:release
         bin/rake logfmt-tagged_logger:release
       env:
-        GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
