@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "logger"
+require "logfmt/logger"
 require "active_support"
 
 module Logfmt
