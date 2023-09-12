@@ -7,20 +7,9 @@ module Logfmt
   class TaggedLogger < ActiveSupport::Logger
     include ActiveSupport::TaggedLogging
 
-    def initialize(*args, formatter: nil, **kwargs)
+    def initialize(*args, formatter: KeyValueFormatter.new, **kwargs)
       super
-      # There is a bug in ActiveSupport::Logger where it ignores the formatter:
-      # kwarg given as part of ::new and instead always sets the logger to an
-      # instance of ActiveSupport::Logger::SimpleFormatter.
-      # see: https://github.com/rails/rails/pull/44942
-      #
-      # When that's addressed we can change this line to:
-      #
-      # ```ruby
-      # self.formatter ||= KeyValueFormatter.new
-      # ```
-      self.formatter = formatter || Logger::KeyValueFormatter.new
-
+      
       # Wrap the base formatter in our tagging-aware formatter
       self.formatter = Formatter.new(self.formatter)
     end
