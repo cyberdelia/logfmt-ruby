@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "delegate"
 require "logfmt/logger"
 require "active_support"
 
@@ -7,8 +8,8 @@ module Logfmt
   class TaggedLogger < ActiveSupport::Logger
     include ActiveSupport::TaggedLogging
 
-    def initialize(*args, formatter: KeyValueFormatter.new, **kwargs)
-      super
+    def initialize(*args, formatter: nil, **kwargs)
+      super(*args, formatter: formatter || Logger::KeyValueFormatter.new, **kwargs)
       
       # Wrap the base formatter in our tagging-aware formatter
       self.formatter = Formatter.new(self.formatter)
