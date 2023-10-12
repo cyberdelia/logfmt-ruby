@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "delegate"
 require "logfmt/logger"
 require "active_support"
 
